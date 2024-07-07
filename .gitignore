@@ -1,0 +1,4 @@
+.conan2
+CMakeLists.txt.user
+CMakeUserPresets.json
+build
