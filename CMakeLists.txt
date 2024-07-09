@@ -17,3 +17,4 @@ link_libraries(
 )
 
 add_subdirectory(l1_hello_window)
+add_subdirectory(l2_hello_triangle)
