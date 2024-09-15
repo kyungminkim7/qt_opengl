@@ -9,11 +9,14 @@ find_package(Qt6 CONFIG REQUIRED COMPONENTS
     Widgets
 )
 
+find_package(openge CONFIG REQUIRED)
+
 qt_standard_project_setup()
 
 link_libraries(
     Qt6::Widgets
     Qt6::OpenGLWidgets
+    openge::openge
 )
 
 add_subdirectory(l1_hello_window)

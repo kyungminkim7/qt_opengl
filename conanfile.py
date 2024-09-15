@@ -11,8 +11,6 @@ class qt_openglRecipe(ConanFile):
     # Sources are located in the same place as this recipe, copy them to the recipe
     exports_sources = "CMakeLists.txt", "src/*"
 
-    default_options = { "qt*:shared": True}
-
     def layout(self):
         cmake_layout(self)
 
@@ -20,7 +18,7 @@ class qt_openglRecipe(ConanFile):
         self.tool_requires("cmake/[>=3.15]")
 
     def requirements(self):
-        self.requires("qt/6.4.2")
+        self.requires("openge/[>=0.0]")
 
     def generate(self):
         deps = CMakeDeps(self)

@@ -2,13 +2,14 @@
 
 #include <memory>
 
-#include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
+#include <openge/GLBuffer.hpp>
+#include <openge/GLFunctions.hpp>
+#include <openge/GLShaderProgram.hpp>
+#include <openge/GLVertexArrayObject.hpp>
+
 #include <QOpenGLWidget>
 
-class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
+class GLWidget : public QOpenGLWidget, protected ge::GLFunctions {
 public:
     GLWidget(QWidget *parent=nullptr,
              Qt::WindowFlags flags=Qt::WindowFlags());
@@ -19,8 +20,8 @@ protected:
     void resizeGL(int width, int height) override;
 
 private:
-    QOpenGLShaderProgram shaderProgram;
-    QOpenGLVertexArrayObject vao;
-    QOpenGLBuffer vbo;
-    QOpenGLBuffer ebo;
+    ge::GLShaderProgram shaderProgram;
+    ge::GLVertexArrayObject vao;
+    ge::GLBuffer vbo;
+    ge::GLBuffer ebo;
 };

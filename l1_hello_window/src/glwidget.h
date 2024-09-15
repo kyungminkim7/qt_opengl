@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <QOpenGLFunctions>
+#include <openge/GLFunctions.hpp>
 #include <QOpenGLWidget>
 
-class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions {
+class GLWidget : public QOpenGLWidget, protected ge::GLFunctions {
 public:
     GLWidget(QWidget *parent=nullptr,
              Qt::WindowFlags flags=Qt::WindowFlags());
