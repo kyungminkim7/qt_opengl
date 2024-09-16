@@ -1,22 +1,24 @@
 #include "glwidget.h"
 
-#include <array>
+#include <vector>
 
 #include <openge/GLShader.hpp>
 
 namespace {
 
-constexpr std::array<float, 12> vertices {
+const std::vector<float> vertices {
      0.5f,  0.5f, 0.0f,  // top right
      0.5f, -0.5f, 0.0f,  // bottom right
     -0.5f, -0.5f, 0.0f,  // bottom left
     -0.5f,  0.5f, 0.0f   // top left
 };
 
-constexpr std::array<unsigned int, 6> indices {
+const std::vector<unsigned int> indices {
     0, 1, 3,   // first triangle
     1, 2, 3    // second triangle
 };
+
+constexpr auto attributePosition = "position";
 
 } // namespace
 
@@ -44,8 +46,8 @@ void GLWidget::initializeGL() {
     vbo.bind();
     vbo.allocate(vertices.data(), vertices.size() * sizeof(GLfloat));
 
-    shaderProgram.enableAttributeArray(0);
-    shaderProgram.setAttributeBuffer(0, GL_FLOAT, 0, 3);
+    shaderProgram.enableAttributeArray(attributePosition);
+    shaderProgram.setAttributeBuffer(attributePosition, GL_FLOAT, 0, 3);
 
     ebo.create();
     ebo.setUsagePattern(ge::GLBuffer::StaticDraw);
@@ -68,7 +70,7 @@ void GLWidget::paintGL() {
     shaderProgram.bind();
     vao.bind();
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     vao.release();
     shaderProgram.release();

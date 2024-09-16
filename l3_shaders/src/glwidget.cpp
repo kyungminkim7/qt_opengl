@@ -1,34 +1,20 @@
 #include "glwidget.h"
 
-#include <array>
-#include <chrono>
-#include <cmath>
+#include <vector>
 
 namespace {
 
-constexpr std::array<float, 12> vertices {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left
+const std::vector<float> vertices {
+    // positions         // colors
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top   
 };
 
-constexpr std::array<unsigned int, 6> indices {
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
-};
+const std::vector<unsigned int> indices { 0, 1, 2 };
 
-float getElapsedTimeSeconds() {
-    using namespace std::chrono;
-    using secondsF = duration<float>;
-
-    static const auto startTime = steady_clock::now();
-    const auto currentTime = steady_clock::now();
-
-    const auto elapsedTime = currentTime - startTime;
-
-    return duration_cast<secondsF>(elapsedTime).count();
-}
+constexpr auto attributePosition = "position";
+constexpr auto attributeColor = "color";
 
 } // namespace
 
@@ -56,8 +42,13 @@ void GLWidget::initializeGL() {
     vbo.bind();
     vbo.allocate(vertices.data(), vertices.size() * sizeof(GLfloat));
 
-    shaderProgram.enableAttributeArray(0);
-    shaderProgram.setAttributeBuffer(0, GL_FLOAT, 0, 3);
+    constexpr auto stride = 6 * sizeof(float);
+
+    shaderProgram.enableAttributeArray(attributePosition);
+    shaderProgram.setAttributeBuffer(attributePosition, GL_FLOAT, 0, 3, stride);
+
+    shaderProgram.enableAttributeArray(attributeColor);
+    shaderProgram.setAttributeBuffer(attributeColor, GL_FLOAT, 3 * sizeof(float), 3, stride);
 
     ebo.create();
     ebo.setUsagePattern(QOpenGLBuffer::StaticDraw);
@@ -87,11 +78,8 @@ void GLWidget::paintGL() {
 
     shaderProgram.bind();
 
-    const auto green = std::sin(getElapsedTimeSeconds()) * 0.5f + 0.5f;
-    shaderProgram.setUniformValue("ourColor", 0.0f, green, 0.0f, 1.0f);
-
     vao.bind();
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     vao.release();
 
     shaderProgram.release();
