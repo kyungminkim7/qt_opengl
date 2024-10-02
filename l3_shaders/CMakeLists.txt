@@ -12,6 +12,6 @@ target_include_directories(l3_shaders PRIVATE
 qt_add_resources(l3_shaders shaders
     PREFIX "/"
     FILES
-        shaders/default.frag
-        shaders/default.vert
+        assets/shader/default.frag
+        assets/shader/default.vert
 )

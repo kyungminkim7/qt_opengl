@@ -12,6 +12,6 @@ target_include_directories(l2_hello_triangle PRIVATE
 qt_add_resources(l2_hello_triangle shaders
     PREFIX "/"
     FILES
-        shaders/default.frag
-        shaders/default.vert
+        assets/shader/default.frag
+        assets/shader/default.vert
 )

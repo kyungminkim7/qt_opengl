@@ -25,16 +25,17 @@ constexpr auto attributePosition = "position";
 GLWidget::GLWidget(QWidget *parent, Qt::WindowFlags flags) : 
     QOpenGLWidget(parent, flags),
     shaderProgram(), vao(),
-    vbo(ge::GLBuffer::VertexBuffer),
-    ebo(ge::GLBuffer::IndexBuffer) { }
+    vbo(ge::GLBuffer::Type::VertexBuffer),
+    ebo(ge::GLBuffer::Type::IndexBuffer) { }
 
 void GLWidget::initializeGL() {
     initializeOpenGLFunctions();
 
-    shaderProgram.addShaderFromSourceFile(ge::GLShader::Vertex,
-                                          ":/shaders/default.vert");
-    shaderProgram.addShaderFromSourceFile(ge::GLShader::Fragment,
-                                          ":/shaders/default.frag");
+    shaderProgram.create();
+    shaderProgram.addShaderFromSourceFile(ge::GLShader::ShaderTypeBit::Vertex,
+                                          "shader/default.vert");
+    shaderProgram.addShaderFromSourceFile(ge::GLShader::ShaderTypeBit::Fragment,
+                                          "shader/default.frag");
     shaderProgram.link();
     shaderProgram.bind();
 
@@ -42,7 +43,7 @@ void GLWidget::initializeGL() {
     vao.bind();
 
     vbo.create();
-    vbo.setUsagePattern(ge::GLBuffer::StaticDraw);
+    vbo.setUsagePattern(ge::GLBuffer::UsagePattern::StaticDraw);
     vbo.bind();
     vbo.allocate(vertices.data(), vertices.size() * sizeof(GLfloat));
 
@@ -50,7 +51,7 @@ void GLWidget::initializeGL() {
     shaderProgram.setAttributeBuffer(attributePosition, GL_FLOAT, 0, 3);
 
     ebo.create();
-    ebo.setUsagePattern(ge::GLBuffer::StaticDraw);
+    ebo.setUsagePattern(ge::GLBuffer::UsagePattern::StaticDraw);
     ebo.bind();
     ebo.allocate(indices.data(), indices.size() * sizeof(GLuint));
 

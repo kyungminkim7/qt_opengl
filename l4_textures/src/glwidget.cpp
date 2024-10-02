@@ -5,16 +5,23 @@
 namespace {
 
 const std::vector<float> vertices {
-    // positions         // colors
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top   
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 };
 
-const std::vector<unsigned int> indices { 0, 1, 2 };
+const std::vector<unsigned int> indices {
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+};
 
 constexpr auto attributePosition = "position";
 constexpr auto attributeColor = "color";
+constexpr auto attributeTextureCoordinate = "textureCoordinate";
+constexpr auto uniformTextureContainer = "texture0";
+constexpr auto uniformTextureFace = "texture1";
 
 } // namespace
 
@@ -43,7 +50,7 @@ void GLWidget::initializeGL() {
     vbo.bind();
     vbo.allocate(vertices.data(), vertices.size() * sizeof(GLfloat));
 
-    constexpr auto stride = 6 * sizeof(float);
+    constexpr auto stride = 8 * sizeof(float);
 
     shaderProgram.enableAttributeArray(attributePosition);
     shaderProgram.setAttributeBuffer(attributePosition, GL_FLOAT, 0, 3, stride);
@@ -51,12 +58,29 @@ void GLWidget::initializeGL() {
     shaderProgram.enableAttributeArray(attributeColor);
     shaderProgram.setAttributeBuffer(attributeColor, GL_FLOAT, 3 * sizeof(float), 3, stride);
 
+    shaderProgram.enableAttributeArray(attributeTextureCoordinate);
+    shaderProgram.setAttributeBuffer(attributeTextureCoordinate, GL_FLOAT, 6 * sizeof(float), 2, stride);
+
     ebo.create();
     ebo.setUsagePattern(ge::GLBuffer::UsagePattern::StaticDraw);
     ebo.bind();
     ebo.allocate(indices.data(), indices.size() * sizeof(GLuint));
 
     vao.release();
+
+    containerTexture = std::make_unique<ge::GLTexture>("image/container.png");
+    containerTexture->setWrapMode(ge::GLTexture::WrapMode::Repeat);
+    containerTexture->setMinificationFilter(ge::GLTexture::Filter::LinearMipMapLinear);
+    containerTexture->setMagnificationFilter(ge::GLTexture::Filter::Linear);
+    shaderProgram.setUniformValue(uniformTextureContainer, 0);
+
+
+    faceTexture = std::make_unique<ge::GLTexture>("image/awesomeface.png");
+    faceTexture->setWrapMode(ge::GLTexture::WrapMode::Repeat);
+    faceTexture->setMinificationFilter(ge::GLTexture::Filter::LinearMipMapLinear);
+    faceTexture->setMagnificationFilter(ge::GLTexture::Filter::Linear);
+    shaderProgram.setUniformValue(uniformTextureFace, 1);
+
     shaderProgram.release();
 
     timer = std::make_unique<QTimer>(this);
@@ -78,6 +102,9 @@ void GLWidget::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shaderProgram.bind();
+
+    containerTexture->bind(0);
+    faceTexture->bind(1);
 
     vao.bind();
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
